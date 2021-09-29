@@ -13,16 +13,13 @@
     (str (seq this)))
 
   (hashCode [this]
-    (prn 'hashCode)
     (hash sorted-k->vs))
 
   (equals [this that]
-    (prn 'equals)
     (= this that))
 
   clojure.lang.IHashEq
   (hasheq [this]
-    (prn 'hasheq)
     (hash sorted-k->vs))
 
   clojure.lang.IMeta
@@ -58,7 +55,6 @@
 
   clojure.lang.Sorted
   (seq [this ascending?]
-    (prn 'clojure.lang.Sorted 'seq)
     (mapcat val (.seq sorted-k->vs ascending?)))
 
   (seqFrom [this k ascending?]
