@@ -19,6 +19,12 @@
   (bb/run-tests opts)
   opts)
 
+(defn jar "Build lib jar." [opts]
+  (-> (assoc opts :lib lib :version version)
+    (bb/clean)
+    (bb/jar))
+  opts)
+
 (defn deploy "Deploy the JAR to Clojars." [opts]
   (-> opts
     (assoc :lib lib :version (if (:snapshot opts) snapshot version))
