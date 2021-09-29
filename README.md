@@ -8,6 +8,12 @@ Default [Java TreeSet semantics](https://docs.oracle.com/en/java/javase/11/docs/
 define elements that are deemed equal by `compareTo` as equal from the standpoint of the set. In some cases, it is
 useful to allow elements deemed equal by `compareTo` to reside in the set.
 
+## Release Information
+
+```clojure
+com.computesoftware/sorted-multiset {:mvn/version "0.1.1"}
+```
+
 ## Example usage
 
 ```clojure
