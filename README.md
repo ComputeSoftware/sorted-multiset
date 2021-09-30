@@ -11,7 +11,7 @@ useful to allow elements deemed equal by `compareTo` to reside in the set.
 ## Release Information
 
 ```clojure
-com.computesoftware/sorted-multiset {:mvn/version "0.1.1"}
+com.computesoftware/sorted-multiset {:mvn/version "0.1.6"}
 ```
 
 ## Example usage
