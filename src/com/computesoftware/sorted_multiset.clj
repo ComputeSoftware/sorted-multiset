@@ -1,4 +1,5 @@
 (ns com.computesoftware.sorted-multiset
+  (:refer-clojure :exclude [subseq rsubseq])
   (:import (clojure.lang PersistentTreeMap IPersistentSet IPersistentMap SeqIterator RT)))
 
 (defn ^:private throw-unsupported []
@@ -163,11 +164,46 @@
   [comparator & keys]
   (reduce conj (SortedMultiset. {} (sorted-map-by comparator) #{}) keys))
 
-(comment
-  (sorted-multiset-by #(compare (:k %1) (:k %2))
-    {:k 0
-     :v "a"}
-    {:k 1
-     :v "b"}
-    {:k 0
-     :v "c"}))
+(def ^:private mk-bound-fn @#'clojure.core/mk-bound-fn)
+
+(defn subseq
+  "sc must be a sorted collection, test(s) one of <, <=, > or
+  >=. Returns a seq of those entries with keys ek for
+  which (test (.. sc comparator (compare ek key)) 0) is true"
+  ([^clojure.lang.Sorted sc test key]
+   (let [include (mk-bound-fn sc test key)]
+     (if (#{> >=} test)
+       (drop-while (complement include) (. sc seq true))
+       (take-while include (. sc seq true)))))
+  ([^clojure.lang.Sorted sc start-test start-key end-test end-key]
+   (when-let [s (subseq sc start-test start-key)]
+     (take-while (mk-bound-fn sc end-test end-key) s))))
+
+(comment (sc.api/defsc 2)
+  (include {:k 1, :a "c"}))
+
+(defn rsubseq
+  "sc must be a sorted collection, test(s) one of <, <=, > or
+  >=. Returns a reverse seq of those entries with keys ek for
+  which (test (.. sc comparator (compare ek key)) 0) is true"
+  ([^clojure.lang.Sorted sc test key]
+   (let [include (mk-bound-fn sc test key)]
+     (if (#{< <=} test)
+       (drop-while (complement include) (. sc seqFrom key false))
+       (take-while include (. sc seq false)))))
+  ([^clojure.lang.Sorted sc start-test start-key end-test end-key]
+   (when-let [s (rsubseq sc start-test start-key)]
+     (drop-while (complement (mk-bound-fn sc end-test end-key)) s))))
+
+(comment (sc.api/defsc 1)
+  (def sm
+    (sorted-multiset-by #(compare (:k %1) (:k %2))
+      {:k 0
+       :v "a"}
+      {:k 1
+       :v "b"}
+      {:k 1
+       :v "c"}
+      {:k 0
+       :v "c"}))
+  (subseq sm > {:k 0}))
